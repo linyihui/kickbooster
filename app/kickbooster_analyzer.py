@@ -1,7 +1,6 @@
 import json
 import pandas as pd
 from pandas.io.json import json_normalize
-from nltk import word_tokenize
 import numpy as np
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.tree import DecisionTreeClassifier

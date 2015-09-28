@@ -1,5 +1,4 @@
-from flask import render_template, request
-from app import app
+from flask import Flask, render_template, request
 from random import randint
 import pandas as pd
 from sklearn import metrics
@@ -10,14 +9,9 @@ import kickbooster_analyzer as ka
 import country_dict
 import numpy as np
 
-@app.route('/')
-# @app.route('/index')
-# def index():
-#    user = { 'nickname': 'Miguel' } # fake user
-#    return render_template("index.html",
-#        title = 'Home',
-#        user = user)
+app = Flask(__name__)
 
+@app.route('/')
 @app.route('/index')
 @app.route('/input')
 def kickbooster_input():
@@ -142,3 +136,7 @@ def kickbooster_output():
     predicted_prob=predicted_prob,
     message_goal=message_goal,
     message_duration=message_duration)
+
+if __name__ == "__main__":
+  app.run(debug=True)
+  # app.run(host="0.0.0.0", port=5000, debug=True)
