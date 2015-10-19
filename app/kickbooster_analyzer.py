@@ -61,7 +61,7 @@ def createTestData(df_test, features, dic_vec, blurb_vec, name_vec):
   X_test = pd.DataFrame(array_test, columns=dic_vec.get_feature_names())
   print 'X_test_categorical: ', X_test.shape
   # Add string features of 'blurb' and 'name' to testing set
-  blurb_test = blurb_vec.transform(df_test['blurb']).toarray() # TODO: Debug
+  blurb_test = blurb_vec.transform(df_test['blurb']).toarray()
   name_test = name_vec.transform(df_test['name']).toarray()
   X_test_blurb = pd.DataFrame(blurb_test, columns=blurb_vec.get_feature_names())
   X_test_name = pd.DataFrame(name_test, columns=name_vec.get_feature_names())
