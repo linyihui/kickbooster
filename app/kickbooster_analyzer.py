@@ -70,7 +70,7 @@ def createTestData(df_test, features, dic_vec, blurb_vec, name_vec):
   return X_test
 
 def discretizeColTrain(df, col, num_buckets):
-  percentile_values = np.percentile(df[col], range(1, num_buckets))
+  percentile_values = np.percentile(df[col], range(100/num_buckets, 100, 100/num_buckets))
   digitized_col = np.digitize(df[col], percentile_values)
   df[col] = digitized_col
   df[col] = df[col].astype(str)
@@ -94,75 +94,73 @@ def addCross(df, cols):
 
 
 def main():
-  # project_sets = readJsonFile('../../data/Kickstarter_Kickstarter_20150402.json')
-  # print 'Data read'
-  # projects = []
-  # for project_set in project_sets:
-  #   projects.extend(project_set['projects'])
-  #
-  # df = json_normalize(projects)
-  # print 'Data normalized'
-  # df.to_csv('../../data/Kickstarter_Kickstarter_20150402_normalized.csv', encoding='utf-8')
+  project_sets = readJsonFile('../../data/Kickstarter_Kickstarter_20150402.json')
+  print 'Data read'
+  projects = []
+  for project_set in project_sets:
+    projects.extend(project_set['projects'])
+  
+  df = json_normalize(projects)
+  print 'Data normalized'
+  df.to_csv('../../data/Kickstarter_Kickstarter_20150402_normalized.csv', encoding='utf-8')
 
-  # df = pd.read_csv('../../data/Kickstarter_Kickstarter_20150402_normalized.csv', encoding='utf-8')
-  # # print df.dtypes  
-  # print 'df dimensions: ', df.shape
-  # df.dropna(subset=COLUMN_TO_DROPNA, inplace=True)
-  # print 'df dimensions na dropped: ', df.shape
+  df = pd.read_csv('../../data/Kickstarter_Kickstarter_20150402_normalized.csv', encoding='utf-8')
+  # print df.dtypes  
+  print 'df dimensions: ', df.shape
+  df.dropna(subset=COLUMN_TO_DROPNA, inplace=True)
+  print 'df dimensions na dropped: ', df.shape
 
-  # df['duration'] = (df['deadline'] - df['launched_at']) / 86400
+  df['duration'] = (df['deadline'] - df['launched_at']) / 86400
 
-  # ## Add wordcount for 'blurb' and 'name' columns
-  # df['blurb_word_count'] = df.apply(blurbWordCount, axis=1)
-  # df['name_word_count'] = df.apply(nameWordCount, axis=1)
-  # print 'Duration, word count added'
+  ## Add wordcount for 'blurb' and 'name' columns
+  df['blurb_word_count'] = df.apply(blurbWordCount, axis=1)
+  df['name_word_count'] = df.apply(nameWordCount, axis=1)
+  print 'Duration, word count added'
 
-  # # # Add catogory.parent column
-  # df['category.parent'] = df.apply(getCategoryParent, axis=1)
-  # print df['category.parent'].head()  
+  # # Add catogory.parent column
+  df['category.parent'] = df.apply(getCategoryParent, axis=1)
+  print df['category.parent'].head()  
 
-  # # print 'Blurb with null string: ', sum(df['blurb'].isnull())
-  # # print 'Name with null string: ', sum(df['name'].isnull())
+  # print 'Blurb with null string: ', sum(df['blurb'].isnull())
+  # print 'Name with null string: ', sum(df['name'].isnull())
 
   
-  # # # ## Write dataframe to csv
-  # df.to_csv('../../data/Kickstarter_20150402_dropna.csv', encoding='utf-8')
+  # # ## Write dataframe to csv
+  df.to_csv('../../data/Kickstarter_20150402_dropna.csv', encoding='utf-8')
   
-  # # ## Extract random samples
-  # df.sample(n=1000).to_csv('../../data/project_rand_samples_1000.csv', encoding='utf-8')
-  # df.sample(n=10000).to_csv('../../data/project_rand_samples_10000.csv', encoding='utf-8')
+  # ## Extract random samples
+  df.sample(n=1000).to_csv('../../data/project_rand_samples_1000.csv', encoding='utf-8')
+  df.sample(n=10000).to_csv('../../data/project_rand_samples_10000.csv', encoding='utf-8')
 
+  ## Read csv file
+  df_full = pd.read_csv('../../data/Kickstarter_20150402_dropna.csv')
+  print df_full[df_full['name']=='Vending Machine (Canceled)']
+  print 'df dimensions: ', df_full.shape
+  df_full.dropna(subset=COLUMN_TO_REMOVE, inplace=True)
+  print 'df dimensions na dropped: ', df_full.shape
 
-  ####
-  # ## Read csv file
-  # df_full = pd.read_csv('../../data/Kickstarter_20150402_dropna.csv')
-  # print df_full[df_full['name']=='Vending Machine (Canceled)']
-  # print 'df dimensions: ', df_full.shape
-  # df_full.dropna(subset=COLUMN_TO_REMOVE, inplace=True)
-  # print 'df dimensions na dropped: ', df_full.shape
-
-  # df_1000 = pd.read_csv('../../data/project_rand_samples_1000.csv')
-  # df_10000 = pd.read_csv('../../data/project_rand_samples_10000.csv')
+  df_1000 = pd.read_csv('../../data/project_rand_samples_1000.csv')
+  df_10000 = pd.read_csv('../../data/project_rand_samples_10000.csv')
   
-  # ## Drop 'live' projects from the dataframe and reset the index
-  # df_full = df_full[df_full['state'] != 'live'].reset_index(drop=True)
-  # df_1000 = df_1000[df_1000['state'] != 'live'].reset_index(drop=True)
-  # df_10000 = df_10000[df_10000['state'] != 'live'].reset_index(drop=True)
+  ## Drop 'live' projects from the dataframe and reset the index
+  df_full = df_full[df_full['state'] != 'live'].reset_index(drop=True)
+  df_1000 = df_1000[df_1000['state'] != 'live'].reset_index(drop=True)
+  df_10000 = df_10000[df_10000['state'] != 'live'].reset_index(drop=True)
 
-  # ## Randomly split data into training and testing sets
-  # df_train_full, df_test_full = createTrainingTestSets(df_full, 0.7)
-  # df_train_1000, df_test_1000 = createTrainingTestSets(df_1000, 0.7)
-  # df_train_10000, df_test_10000 = createTrainingTestSets(df_10000, 0.7)
+  ## Randomly split data into training and testing sets
+  df_train_full, df_test_full = createTrainingTestSets(df_full, 0.7)
+  df_train_1000, df_test_1000 = createTrainingTestSets(df_1000, 0.7)
+  df_train_10000, df_test_10000 = createTrainingTestSets(df_10000, 0.7)
 
-  # ## Write into csv files
-  # df_train_full.to_csv('../../data/df_train_full.csv', encoding='utf-8')
-  # df_test_full.to_csv('../../data/df_test_full.csv', encoding='utf-8')
-  # df_train_1000.to_csv('../../data/df_train_1000.csv', encoding='utf-8')
-  # df_test_1000.to_csv('../../data/df_test_1000.csv', encoding='utf-8')
-  # df_train_10000.to_csv('../../data/df_train_10000.csv', encoding='utf-8')
-  # df_test_10000.to_csv('../../data/df_test_10000.csv', encoding='utf-8')
+  ## Write into csv files
+  df_train_full.to_csv('../../data/df_train_full.csv', encoding='utf-8')
+  df_test_full.to_csv('../../data/df_test_full.csv', encoding='utf-8')
+  df_train_1000.to_csv('../../data/df_train_1000.csv', encoding='utf-8')
+  df_test_1000.to_csv('../../data/df_test_1000.csv', encoding='utf-8')
+  df_train_10000.to_csv('../../data/df_train_10000.csv', encoding='utf-8')
+  df_test_10000.to_csv('../../data/df_test_10000.csv', encoding='utf-8')
 
-  ####
+  ###############################################################
   # # # Read training and testing sets
   df_train = pd.read_csv('../../data/df_train_full.csv', index_col=0)
   df_test = pd.read_csv('../../data/df_test_full.csv', index_col=0)
